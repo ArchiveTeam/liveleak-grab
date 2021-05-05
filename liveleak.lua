@@ -271,8 +271,17 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
   if allowed(url, nil) and status_code == 200
     and not string.match(url, "^https?://cdn[0-9]*%.liveleak%.com/") then
     html = read_file(file)
-    for user in string.gmatch(html, "Credit: ([^<%s]+)%s+<") do
+    for user in string.gmatch(html, "Credit: ([^<%s]+)%s*<") do
       discovered["user:" .. user] = true
+    end
+    for location in string.gmatch(html, "Location: ([^<%s]+)%s*<") do
+      discovered["location:" .. location] = true
+    end
+    local tags = string.match(html, "<p><strong>Tags:</strong>([^<]+)</p>")
+    if tags then
+      for tag in string.gmatch(tags, "([^,]+)") do
+        discovered["tag:" .. string.gsub(string.match(tag, "^%s*(.-)%s*$"), " ", "+")] = true
+      end
     end
     for newurl in string.gmatch(string.gsub(html, "&quot;", '"'), '([^"]+)') do
       checknewurl(newurl)
