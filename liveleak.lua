@@ -268,9 +268,14 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
     check(string.gsub(url, "/ll_embed%?f=", "/e/"))
   end
 
-  if allowed(url, nil) and status_code == 200
+  if allowed(url, nil) and status_code < 400
     and not string.match(url, "^https?://cdn[0-9]*%.liveleak%.com/") then
     html = read_file(file)
+    if string.len(html) < 1000 then
+      io.stdout:write("Response body too short.\n")
+      io.stdout:flush()
+      abort_item(true)
+    end
     for user in string.gmatch(html, "Credit: ([^<%s]+)%s*<") do
       discovered["user:" .. user] = true
     end
@@ -352,13 +357,13 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     return wget.actions.EXIT
   end
 
-  if status_code >= 300 and status_code <= 399 then
+  --[[if status_code >= 300 and status_code <= 399 then
     local newloc = urlparse.absolute(url["url"], http_stat["newloc"])
     if downloaded[newloc] or addedtolist[newloc] then
       tries = 0
       return wget.actions.EXIT
     end
-  end
+  end]]
   
   if status_code >= 200 and status_code <= 399 then
     downloaded[url["url"]] = true
