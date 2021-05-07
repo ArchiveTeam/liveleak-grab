@@ -161,6 +161,9 @@ allowed = function(url, parenturl)
 
   match = string.match(url, "/c/([^%?&]+)")
   if match then
+    if ids[match] then
+      return true
+    end
     discovered["user:" .. match] = true
   end
 
