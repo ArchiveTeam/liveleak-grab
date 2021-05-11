@@ -55,7 +55,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20210511.01'
+VERSION = '20210511.02'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/59.0'
 TRACKER_ID = 'liveleak'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -159,6 +159,7 @@ class ChooseTargetAndUpload(Task):
         except:
             item.log_output('Could not get rsync target.')
             return self.retry(item)
+        assert os.path.getsize('%(data_dir)s/%(warc_file_base)s.warc.gz' % item) > 10000
         inner_task = RsyncUpload(
             target,
             [
