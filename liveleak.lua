@@ -348,13 +348,6 @@ wget.callbacks.httploop_result = function(url, err, http_stat)
     return wget.actions.EXIT
   end
 
-  if (status_code == 404 or status_code == 403)
-    and string.match(url["url"], "%.mp4") then
-    abort_item(true)
-    submit_discovered()
-    return wget.actions.ABORT
-  end
-
   if status_code == 403
     and string.match(url["url"], "^https?://cdn[0-9]*%.liveleak%.com/") then
     return wget.actions.EXIT
