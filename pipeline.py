@@ -55,7 +55,7 @@ if not WGET_AT:
 #
 # Update this each time you make a non-cosmetic change.
 # It will be added to the WARC files and reported to the tracker.
-VERSION = '20210511.02'
+VERSION = '20210514.01'
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/59.0'
 TRACKER_ID = 'liveleak'
 TRACKER_HOST = 'legacy-api.arpa.li'
@@ -315,16 +315,13 @@ class WgetArgs(object):
                 wget_args.extend(['--warc-header', 'liveleak-video-embed: '+item_value])
                 wget_args.append('https://www.liveleak.com/e?t='+item_value)
             elif item_type == 'user':
-                raise Exception('skipping this item for now.')
                 wget_args.extend(['--warc-header', 'liveleak-user: '+item_value])
                 wget_args.append('https://www.liveleak.com/list?q='+item_value)
                 wget_args.append('https://www.liveleak.com/c/'+item_value)
             elif item_type == 'tag':
-                raise Exception('skipping this item for now.')
                 wget_args.extend(['--warc-header', 'liveleak-tag: '+item_value])
                 wget_args.append('https://www.liveleak.com/list?q='+item_value)
             elif item_type == 'location':
-                raise Exception('skipping this item for now.')
                 wget_args.extend(['--warc-header', 'liveleak-location: '+item_value])
                 wget_args.append('https://www.liveleak.com/list?q='+item_value)
             else:
