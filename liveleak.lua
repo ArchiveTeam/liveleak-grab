@@ -89,6 +89,11 @@ submit_discovered = function()
   end
 end
 
+queue_item = function(type_, match)
+  match = string.gsub(match, "[^0-9a-zA-Z_%-%.]", "")
+  discovered[type_ .. ":" .. match] = true
+end
+
 get_item = function(url)
   local match = string.match(url, "^https?://[^/]*liveleak%.com/view%?[ti]=([0-9a-zA-Z_%-]+_[0-9]+)")
   local type_ = "video-old"
@@ -148,7 +153,7 @@ allowed = function(url, parenturl)
     ids[match] = true
     found_second = true
   elseif match and not ids[match] then
-    discovered[type_ .. ":" .. match] = true
+    queue_item(type_, match)
   end
 
   for _, p in pairs({"([0-9a-zA-Z_%-]+)", "([0-9]+)", "([^%?&]+)"}) do
@@ -164,7 +169,7 @@ allowed = function(url, parenturl)
     if ids[match] then
       return true
     end
-    discovered["user:" .. match] = true
+    queue_item("user", match)
   end
 
   return false
@@ -280,15 +285,15 @@ wget.callbacks.get_urls = function(file, url, is_css, iri)
       abort_item(true)
     end
     for user in string.gmatch(html, "Credit: ([^<%s]+)%s*<") do
-      discovered["user:" .. user] = true
+      queue_item("user", user)
     end
     for location in string.gmatch(html, "Location: ([^<%s]+)%s*<") do
-      discovered["location:" .. location] = true
+      queue_item("location", location)
     end
     local tags = string.match(html, "<p><strong>Tags:</strong>([^<]+)</p>")
     if tags then
       for tag in string.gmatch(tags, "([^,]+)") do
-        discovered["tag:" .. string.gsub(string.match(tag, "^%s*(.-)%s*$"), " ", "+")] = true
+        queue_item("tag", string.gsub(string.match(tag, "^%s*(.-)%s*$"), " ", "+"))
       end
     end
     for newurl in string.gmatch(string.gsub(html, "&quot;", '"'), '([^"]+)') do
